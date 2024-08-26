@@ -238,7 +238,16 @@ function isMonsterHit() {
 }
 
 function dodge() {
-  text.innerText = "You dodge the attack from the " + monsters[fighting].name;
+    if (isPlayerDodge()) {
+        text.innerText = "You dodge the attack from the " + monsters[fighting].name;
+    } else {
+        return isMonsterHit();
+    }
+}
+
+function isPlayerDodge() {
+    console.log("You're succeed to dodge");
+    return Math.random() > .5;
 }
 
 function defeatMonster() {
@@ -260,7 +269,7 @@ function defeatMonster() {
 
   // Add the weapon to the player's inventory
   inventory.push(randomWeapon.name);
-  alert(`You have defeated the monster and found a ${randomWeapon.name}!`);
+  text.innerText += `You have defeated the monster and found a "${randomWeapon.name}"!`;
 
   // Find the strongest weapon in the inventory
   let strongestWeapon = weapons.find(weapon => weapon.name === inventory[0]);
