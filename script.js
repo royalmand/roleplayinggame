@@ -24,8 +24,13 @@ const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
   { name: 'claw hammer', power: 50 },
-  { name: 'sword', power: 100 }
+  { name: 'sword', power: 100 },
+  { name: 'flute', power: 150 },
+  { name: 'axe', power: 65 },
+  { name: 'katana', power: 120 },
+  { name: 'bazooka', power: 200 }
 ];
+
 
 // Set of the monsters
 const monsters = [
@@ -98,7 +103,7 @@ const locations = [
   }
 ];
 
-// initialize buttons
+// Initialize buttons
 button1.onclick = goStore;
 button2.onclick = goCave;
 button3.onclick = fightDragon;
@@ -149,7 +154,7 @@ function buyWeapon() {
       let newWeapon = weapons[currentWeapon].name;
       text.innerText = "You now have a " + newWeapon + ".";
       inventory.push(newWeapon);
-      text.innerText += " In your inventory you have: " + inventory;
+      text.innerText += " In your inventory you have: " + inventory.join(", ");
     } else {
       text.innerText = "You do not have enough gold to buy a weapon.";
     }
@@ -224,7 +229,7 @@ function attack() {
 
 function getMonsterAttackValue(level) {
   const hit = (level * 5) - (Math.floor(Math.random() * xp));
-  console.log(hit);
+  console.log(`Your health decreases by ${hit}`);
   return hit > 0 ? hit : 0;
 }
 
@@ -242,7 +247,58 @@ function defeatMonster() {
   goldText.innerText = gold;
   xpText.innerText = xp;
   update(locations[4]);
+
+  // Randomly determine the weapon dropped
+  const randomWeapon = weapons[Math.floor(Math.random() * weapons.length)];
+  console.log(`Take an object ${randomWeapon.name} as a loot weapon for defeating ${monsters[fighting].name}`);
+
+  /* inventory[0]: This takes the first item in the inventory array. The inventory holds the names of weapons that the player has.
+  
+  weapons.find(weapon => weapon.name === inventory[0]): This finds the corresponding weapon object in the weapons array that matches the first weapon in the inventory.
+  
+  strongestWeapon: This variable now holds the weapon object that corresponds to the first weapon in the inventory.*/
+
+  // Add the weapon to the player's inventory
+  inventory.push(randomWeapon.name);
+  alert(`You have defeated the monster and found a ${randomWeapon.name}!`);
+
+  // Find the strongest weapon in the inventory
+  let strongestWeapon = weapons.find(weapon => weapon.name === inventory[0]);
+
+  /* inventory.forEach(weaponName => { ... }): This loops through each weapon name in the inventory.
+
+   weapons.find(w => w.name === weaponName): For each weapon name in the inventory, it finds the corresponding weapon object in the weapons array.
+
+   weapon: This is the parameter of the arrow function. It represents each individual object in the weapons array as the .find() method iterates through the array.
+
+   weapon.name: weapon is an object representing a single weapon in the weapons array. .name accesses the name property of this weapon object.
+
+   weapon.name === inventory[0]: This is the condition that the .find() method is checking. It compares the name property of the current weapon object with the first item in the inventory array.
+   */
+  inventory.forEach(weaponName => {
+    const weapon = weapons.find(w => w.name === weaponName);
+    if (weapon.power > strongestWeapon.power) {
+        strongestWeapon = weapon; 
+    }
+  });
+
+   /* First, the code initializes strongestWeapon with the first weapon in the inventory.
+
+   Then, it goes through each weapon in the inventory and checks if any weapon has more power than the currently identified strongestWeapon.
+
+   Finally, strongestWeapon ends up being the weapon with the highest power in the inventory.
+   */
+
+  // Change currentWeapon index 
+  const weaponIndex = weapons.findIndex(weapon => weapon.name === strongestWeapon.name);
+  console.log(weaponIndex);
+
+  // Update currentWeapon to this index
+  currentWeapon = weaponIndex;
+  console.log(`Current weapon set to ${weapons[currentWeapon].name}`);
+
 }
+
 
 function lose() {
   update(locations[5]);
