@@ -67,9 +67,9 @@ const locations = [
   },
   {
     name: "cave",
-    "button text": ["Fight slime", "Fight fanged beast", "Go to town square"],
-    "button functions": [fightSlime, fightBeast, goTown],
-    text: "You enter the cave. You see some monsters."
+    "button text": ["Explore cave", "Search monster", "Go to town square"],
+    "button functions": [exploreCave, fightBeast, goTown],
+    text: "You enter the cave. What are you gonna do?"
   },
   {
     name: "fight",
@@ -79,8 +79,8 @@ const locations = [
   },
   {
     name: "kill monster",
-    "button text": ["Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [goTown, goTown, easterEgg],
+    "button text": ["Continue explore", "Go to town square", "Go to town square"],
+    "button functions": [exploreCave, goTown, easterEgg],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
   },
   {
@@ -100,8 +100,35 @@ const locations = [
     "button text": ["2", "8", "Go to town square?"],
     "button functions": [pickTwo, pickEight, goTown],
     text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
-  }
+  },
+  {
+    name: "treasure chest",
+    "button text": ["Continue exploring", "Search a monster", "Go to town square"],
+    "button functions": [exploreCave, fightBeast, goTown],
+    text: "You find a hidden treasure chest! It contains 50 gold and a rare gem."
+  },
+  {
+    name: "mysterious potion",
+    "button text": ["Yes", "Continue exploring", "Go to town square"],
+    "button functions": [isDrinkPotion, exploreCave, goTown],
+    text: "You discover a bubbling potion on the ground. Do you drink it?"
+  },
+  {
+    name: "ancient relic",
+    "button text": ["Continue exploring", "Search a monster", "Go to town square"],
+    "button functions": [exploreCave, fightBeast, goTown],
+    text: "You stumble upon an ancient relic. It will add health 100."
+  },
+  {
+    name: "potion drank",
+    "button text": ["Continue exploring", "Continue exploring", "Go to town square"],
+    "button functions": [exploreCave, exploreCave, goTown],
+    text: "You drink a bubbling potion an gain a power up!"
+  },
 ];
+
+// Define the random events for the cave
+const caveRandomEvents = [treasureChest, mysteriousPotion, ancientRelic, fightBeast, fightSlime];
 
 // Initialize buttons
 button1.onclick = goStore;
@@ -177,6 +204,42 @@ function sellWeapon() {
   }
 }
 
+// Cave random events
+function exploreCave() {
+    // Randomly select a function from the array and run it
+    const randomIndex = Math.floor(Math.random() * caveRandomEvents.length);
+    const selectedFunction = caveRandomEvents[randomIndex];
+    selectedFunction(); // Execute the selected function
+}
+
+function treasureChest() {
+    update(locations[8]);
+    gold += 50;
+    goldText.innerHTML = gold;
+    text.innerHTML = "You found a treasure chest! You gain 50 gold.";
+}
+
+function mysteriousPotion() {
+    update(locations[9]);
+    isDrinkPotion()
+}
+
+function isDrinkPotion() {
+    // Yes button, player will gain health by 20
+    update(locations[11]);
+    health += 20;
+    healthText.innerHTML = health;
+}
+
+
+function ancientRelic() {
+    update(locations[10]);
+    health += 100;
+    healthText.innerHTML = health;
+    text.innerText = "You find an ancient relic and gain 100 health!";
+}
+
+
 // Fight monster
 function fightSlime() {
   fighting = 0;
@@ -205,11 +268,14 @@ function attack() {
   text.innerText = "The " + monsters[fighting].name + " attacks.";
   text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
   health -= getMonsterAttackValue(monsters[fighting].level);
+
+  // Monster hit or not?
   if (isMonsterHit()) {
     monsterHealth -= weapons[currentWeapon].power + Math.floor(Math.random() * xp) + 1;    
   } else {
     text.innerText += " You miss.";
   }
+
   healthText.innerText = health;
   monsterHealthText.innerText = monsterHealth;
   if (health <= 0) {
