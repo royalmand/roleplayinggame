@@ -24,11 +24,11 @@ const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
   { name: 'claw hammer', power: 50 },
-  { name: 'sword', power: 100 },
-  { name: 'flute', power: 150 },
-  { name: 'axe', power: 65 },
+  { name: 'sword', power: 80 },
+  { name: 'flute', power: 100 },
+  { name: 'axe', power: 95 },
   { name: 'katana', power: 120 },
-  { name: 'bazooka', power: 200 }
+  { name: 'bazooka', power: 150 }
 ];
 
 
@@ -48,6 +48,11 @@ const monsters = [
     name: "dragon",
     level: 20,
     health: 300
+  },
+  {
+    name: "goblin",
+    level: 3,
+    health: 25
   }
 ]
 
@@ -117,18 +122,30 @@ const locations = [
     name: "ancient relic",
     "button text": ["Continue exploring", "Search a monster", "Go to town square"],
     "button functions": [exploreCave, fightBeast, goTown],
-    text: "You stumble upon an ancient relic. It will add health 100."
+    text: "You stumble upon an ancient relic. It will add health 30."
   },
   {
     name: "potion drank",
     "button text": ["Continue exploring", "Continue exploring", "Go to town square"],
     "button functions": [exploreCave, exploreCave, goTown],
-    text: "You drink a bubbling potion an gain a power up!"
+    text: "You drink a bubbling potion an gain a power up! But what a minute??"
   },
+  {
+    name: "meet a girl",
+    "button text": ["Flirt with her", "Continue exploring", "Escape like a coward"],
+    "button functions": [isHeFlirt, exploreCave, goTown],
+    text: "You met a cute girl. What are you gonna do?"
+  },
+  {
+    name: "Flirt with her",
+    "button text": ["Whatever", "What a bitch", "Quit the exploration"],
+    "button functions": [exploreCave, exploreCave, goTown],
+    text: "She slap your face hard. Minus 40 health"
+  }
 ];
 
 // Define the random events for the cave
-const caveRandomEvents = [treasureChest, mysteriousPotion, ancientRelic, fightBeast, fightSlime];
+const caveRandomEvents = [treasureChest, mysteriousPotion, ancientRelic, meetGirl, fightBeast, fightSlime, fightGoblin];
 
 // Initialize buttons
 button1.onclick = goStore;
@@ -225,18 +242,27 @@ function mysteriousPotion() {
 }
 
 function isDrinkPotion() {
-    // Yes button, player will gain health by 20
+    // Yes button, player will loss health by 20
     update(locations[11]);
-    health += 20;
+    health -= 20;
     healthText.innerHTML = health;
 }
 
-
 function ancientRelic() {
     update(locations[10]);
-    health += 100;
+    health += 30;
     healthText.innerHTML = health;
-    text.innerText = "You find an ancient relic and gain 100 health!";
+    text.innerText = "You find an ancient relic and gain 30 health!";
+}
+
+function meetGirl() {
+  update(locations[12]);
+}
+
+function isHeFlirt() {
+    update(locations[13]);
+    health -= 40;
+    healthText.innerHTML = health;
 }
 
 
@@ -253,6 +279,11 @@ function fightBeast() {
 
 function fightDragon() {
   fighting = 2;
+  goFight();
+}
+
+function fightGoblin() {
+  fighting = 3;
   goFight();
 }
 
